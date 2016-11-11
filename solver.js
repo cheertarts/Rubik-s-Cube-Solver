@@ -117,10 +117,14 @@ for (var i = 0; i < process.argv.length; ++i) {
     mode = 'convert';
     continue;
   }
+  if (process.argv[i] === '-r' || process.argv[i] === '--cross') {
+    mode = 'cross';
+    continue;
+  }
   arg = arg.concat(process.argv[i]).concat(" ");
 }
 
-arg = arg.slice(0, -1);
+arg = arg.slice(0, -1).replace(/i/g, '\'');
 
 if (mode === undefined) {
   console.log("-s - generates 20 scrambles.\n-c - solves a cube.\n-t - converts scramble to cube notation.");
@@ -137,7 +141,17 @@ if (mode === 'cube') {
 }
 
 if (mode === 'convert') {
+  console.log(arg);
   var cube = new Core.Cube(undefined, undefined, arg.split(" "));
   console.log(shrinkCubeDef(cube));
+}
+
+if (mode === 'cross') {
+  console.log(arg);
+  var cube = new Core.Cube(undefined, undefined, arg.split(" "));
+  var cross = cube.subset(new Core.Cube(
+    Core.emptyList(8).concat([[8, 0], [9, 0], [10, 0], [11, 0]]),
+    Core.emptyList(8)));
+  console.log(Core.findSimpleSolution(cross).join(" "));
 }
 
